@@ -1,8 +1,6 @@
-# flutter_app
+# flutter_calculadorIMC
 
-A new Flutter application.
+My first Flutter application to learn this technology.
 
-## Getting Started
-
-For help getting started with Flutter, view our online
+## If you want learn too, you can view the online documentation:
 [documentation](https://flutter.io/).
