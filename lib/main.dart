@@ -1,138 +1,152 @@
 import 'package:flutter/material.dart';
 
-void main() => runApp(new MyApp());
-
-class MyApp extends StatelessWidget {
-  // This widget is the root of your application.
-  @override
-  Widget build(BuildContext context) {
-    return new MaterialApp(
-      title: 'Calculadora de IMC',
-      theme: new ThemeData(
-        primarySwatch: Colors.green,
-      ),
-      home: new MyHomePage(title: 'Índice de massa corporal (IMC)'),
-    );
-  }
+void main() {
+  runApp(MaterialApp(
+    home: Home(),
+  ));
 }
 
-class MyHomePage extends StatefulWidget {
-  MyHomePage({Key key, this.title}) : super(key: key);
-  final String title;
-
+class Home extends StatefulWidget {
   @override
-  _MyHomePageState createState() => new _MyHomePageState();
+  _HomeState createState() => _HomeState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
-  double _imc = 00.000;
-  String _StrIMC = "";
-  String _alt = "0.0";
-  String _peso = "0.0";
-  String _result = "";
+class _HomeState extends State<Home> {
+  TextEditingController pesoController = TextEditingController();
+  TextEditingController alturaController = TextEditingController();
 
-  void _calculaIMC() {
+  GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+
+  String _info = 'Informe seus dados!';
+
+  void _resetFields() {
+    pesoController.text = '';
+    alturaController.text = '';
     setState(() {
-      if (_peso == "" || _alt == "") {
-        _StrIMC = "";
-        _result = "";
-      } else {
-        _imc = (double.parse(_peso) /
-            (double.parse(_alt) * double.parse(_alt)).ceilToDouble());
-        _StrIMC = "IMC: " + _imc.toString().substring(0, 6) + " kg/m²";
+      _info = 'Informe seus dados!';
+    });
+  }
 
-        if (_imc < 16.0) {
-          _result = "Magreza Grave";
-        } else if (_imc >= 16.0 && _imc < 17.0) {
-          _result = "Magreza Moderada";
-        } else if (_imc >= 17.0 && _imc < 18.5) {
-          _result = "Magreza Leve";
-        } else if (_imc >= 18.5 && _imc < 25.0) {
-          _result = "Saudável";
-        } else if (_imc >= 25.0 && _imc < 30.0) {
-          _result = "Sobrepeso ";
-        } else if (_imc >= 30.0 && _imc < 35.0) {
-          _result = "Obesidade";
-        } else if (_imc >= 35.0 && _imc < 40.0) {
-          _result = "Obesidade Severa";
-        } else if (_imc >= 40.0) {
-          _result = "Obesidade Mórbida";
-        }
+  void _calculate() {
+    setState(() {
+      double peso = double.parse(pesoController.text.replaceAll(',', '.'));
+      double altura = double.parse(
+              alturaController.text.replaceAll('.', '').replaceAll(',', '')) /
+          100;
+      double imc = peso / (altura * altura);
+
+      if (imc < 16.0) {
+        _info = "Magreza Grave IMC: (${imc.toStringAsPrecision(3)})";
+      } else if (imc >= 16.0 && imc < 17.0) {
+        _info = "Magreza Moderada IMC: (${imc.toStringAsPrecision(3)})";
+      } else if (imc >= 17.0 && imc < 18.5) {
+        _info = "Magreza Leve IMC: (${imc.toStringAsPrecision(3)})";
+      } else if (imc >= 18.5 && imc < 25.0) {
+        _info = "Saudável IMC: (${imc.toStringAsPrecision(3)})";
+      } else if (imc >= 25.0 && imc < 30.0) {
+        _info = "Sobrepeso IMC: (${imc.toStringAsPrecision(3)})";
+      } else if (imc >= 30.0 && imc < 35.0) {
+        _info = "Obesidade IMC: (${imc.toStringAsPrecision(3)})";
+      } else if (imc >= 35.0 && imc < 40.0) {
+        _info = "Obesidade Severa IMC: (${imc.toStringAsPrecision(3)})";
+      } else if (imc >= 40.0) {
+        _info = "Obesidade Mórbida IMC: (${imc.toStringAsPrecision(3)})";
       }
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    return new Scaffold(
-      appBar: new AppBar(
-        title: new Text(widget.title),
-      ),
-      body: new Container(
-        padding: const EdgeInsets.all(8.0),
-        child: new Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: <Widget>[
-            new TextField(
-              onChanged: (text) {
-                _alt = "$text".replaceAll(',', '.');
-              },
-              keyboardType: TextInputType.number,
-              decoration: InputDecoration(labelText: 'Insira sua altura'),
-            ),
-            new TextField(
-              onChanged: (text) {
-                _peso = "$text".replaceAll(',', '.');
-              },
-              keyboardType: TextInputType.number,
-              decoration: InputDecoration(
-                labelText: 'Insira seu peso',
-              ),
-            ),
-            Padding(
-                padding: EdgeInsets.only(top: 20.0, bottom: 10.0),
-                child: Text('$_StrIMC',
-                    overflow: TextOverflow.ellipsis,
-                    style: new TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 25.0,
-                    ))),
-            Padding(
-                padding: EdgeInsets.only(bottom: 10.0),
-                child: Text(
-                  '$_result',
-                  style: Theme.of(context).textTheme.display2,
-                )),
-            new RaisedButton(
-              child: Padding(
-                  padding:
-                      EdgeInsets.symmetric(vertical: 8.0, horizontal: 20.0),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: <Widget>[
-                      Icon(
-                        Icons.accessibility,
-                        color: Colors.white,
-                      ),
-                      SizedBox(width: 8.0),
-                      Text(
-                        'CALCULAR IMC',
-                        style: TextStyle(
-                          color: Colors.white,
-                        ),
-                      ),
-                    ],
-                  )),
-              onPressed: () {
-                _calculaIMC();
-              },
-              color: Colors.green,
-              splashColor: Colors.deepOrange,
-              shape: const StadiumBorder(),
+    return Scaffold(
+        appBar: AppBar(
+          title: Text('Calculadora de IMC'),
+          centerTitle: true,
+          backgroundColor: Colors.green,
+          actions: <Widget>[
+            IconButton(
+              icon: Icon(Icons.refresh),
+              onPressed: _resetFields,
             )
           ],
         ),
-      ),
-    );
+        backgroundColor: Colors.white,
+        body: SingleChildScrollView(
+            //Para quando abrir o teclado permita rolar a página sem dar conflito
+            padding: EdgeInsets.fromLTRB(10.0, 0.0, 10.0, 0.0),
+            child: Form(
+              key: _formKey,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: <Widget>[
+                  Icon(
+                    Icons.perm_identity,
+                    size: 120.0,
+                    color: Colors.green,
+                  ),
+                  TextFormField(
+                    keyboardType: TextInputType.number,
+                    decoration: InputDecoration(
+                        labelText: 'Peso (kg)',
+                        labelStyle: TextStyle(color: Colors.green)),
+                    textAlign: TextAlign.center,
+                    style: TextStyle(color: Colors.green, fontSize: 20.0),
+                    controller: pesoController,
+                    validator: (value) {
+                      if (value.isEmpty) {
+                        return 'Insira seu Peso!';
+                      }
+                    },
+                  ),
+                  TextFormField(
+                    keyboardType:
+                        TextInputType.numberWithOptions(decimal: false),
+                    decoration: InputDecoration(
+                        labelText: 'Altura (cm)',
+                        labelStyle: TextStyle(color: Colors.green)),
+                    textAlign: TextAlign.center,
+                    style: TextStyle(color: Colors.green, fontSize: 20.0),
+                    controller: alturaController,
+                    validator: (value) {
+                      if (value.isEmpty) {
+                        return 'Insira sua Altura!';
+                      }
+                    },
+                  ),
+                  Padding(
+                    padding: EdgeInsets.only(top: 10.0, bottom: 10.0),
+                    child: Container(
+                        height: 50.0,
+                        child: RaisedButton(
+                          splashColor: Colors.deepOrange,
+                          shape: const StadiumBorder(),
+                          child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: <Widget>[
+                                Icon(
+                                  Icons.accessibility,
+                                  color: Colors.white,
+                                ),
+                                Text(
+                                  'Calcular',
+                                  style: TextStyle(
+                                      color: Colors.white, fontSize: 20.0),
+                                )
+                              ]),
+                          color: Colors.green,
+                          onPressed: () {
+                            if (_formKey.currentState.validate()) {
+                              _calculate();
+                            }
+                          },
+                        )),
+                  ),
+                  Text(
+                    _info,
+                    textAlign: TextAlign.center,
+                    style: TextStyle(color: Colors.green, fontSize: 20.0),
+                  )
+                ],
+              ),
+            )));
   }
 }
